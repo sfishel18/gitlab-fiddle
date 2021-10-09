@@ -2,3 +2,4 @@
 .ssh
 node_modules
 pipeline-simulator-target
+dist
