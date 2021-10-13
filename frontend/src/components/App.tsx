@@ -24,7 +24,7 @@ export default () => {
                 </>}
             </header>
             <section>
-                {isRunnable && <>
+                {!isEmpty && <>
                     <table>
                         <thead>
                             <tr>{jobsByStage?.map(({ stage }) => <th key={stage}>{stage}</th>)}</tr>
@@ -32,14 +32,11 @@ export default () => {
                         <tbody>
                             <tr>
                                 {jobsByStage?.map(({ stage, jobs }) => <td key={stage} style={{ verticalAlign: 'top' }}>
-                                    <ul>{jobs.map(job => <li key={job}>{job}</li>)}</ul>
+                                    <ul>{jobs.map(job => <li key={job.name}>{job.name}{job.status ? `(${job.status})` : null}</li>)}</ul>
                                 </td>)}
                             </tr>
                         </tbody>
                     </table>
-                </>}
-                {isRunning && pipelineInfo && <>
-                    <pre>{JSON.stringify(pipelineInfo, null, 2)}</pre>
                 </>}
             </section>
             

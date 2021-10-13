@@ -1,17 +1,19 @@
 import { useInterpret, useSelector } from '@xstate/react';
 import { isEqual, mapValues, memoize, pick } from 'lodash';
 import { useCallback } from 'react';
-import { interval, switchMap, map, distinctUntilChanged } from 'rxjs';
+import { interval, switchMap, map, distinctUntilChanged, takeWhile, startWith } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { createMachine, assign, StateFrom } from 'xstate';
+import { PipelineInfo } from '../type';
 import getJobsByStage from '../utils/getJobsByStage';
+import pipelineHasIncompleteJobs from '../utils/pipelineHasIncompleteJobs';
 
 const apiUrl = 'http://localhost:3000';
 
 type PipelineContext = {
     yaml: string | null,
-    pipelineInfo: any,
-    error: any,
+    pipelineInfo: PipelineInfo | null,
+    error: Error | null,
 };
 
 type EmptyContext = {
@@ -110,9 +112,11 @@ const pipelineMachine = createMachine<PipelineContext, PipelineEvent, PipelineTy
             }
           }).pipe(
               switchMap(({ response }) => interval(2000).pipe(
-                  switchMap(() => ajax<object>(`${apiUrl}/pipeline/${response.id}`)),
+                  startWith(0),
+                  switchMap(() => ajax<PipelineInfo>(`${apiUrl}/pipeline/${response.id}`)),
                   map(({ response: pipelineInfo }) => mapValues(pipelineInfo, val => pick(val, 'name', 'stage', 'status', 'variables'))),
                   distinctUntilChanged(isEqual),
+                  takeWhile(pipelineHasIncompleteJobs, true),
                   map((pipelineInfo) => ({ type: 'SET_PIPELINE_INFO', pipelineInfo }))
               ))
           )
@@ -127,7 +131,16 @@ const selectIsRunning = (state: PipelineState) => state.value === 'running';
 
 const selectYaml = (state: PipelineState) => state.context.yaml;
 const memoizedGetJobsByStage = memoize(getJobsByStage);
-const selectJobsByStage = (state: PipelineState) => memoizedGetJobsByStage(state.context.yaml);
+const selectJobsByStage = (state: PipelineState) => { 
+    let jobsByStage = memoizedGetJobsByStage(state.context.yaml);
+    if (jobsByStage && state.context.pipelineInfo) {
+        jobsByStage = jobsByStage?.map(stageInfo => ({
+            ...stageInfo,
+            jobs: stageInfo.jobs.map(job => ({ ...job, ...state.context.pipelineInfo?.[job.name!] }))
+        }))
+    }
+    return jobsByStage;
+}
 const selectPipelineInfo = (state: PipelineState) => state.context.pipelineInfo;
 
 export default () => {
