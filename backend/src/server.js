@@ -1,9 +1,11 @@
+const cors = require('cors');
 const express = require('express');
 const api = require('./api');
 
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
+app.use(cors());
 
 app.post('/pipeline', async (req, res, next) => {
     try {

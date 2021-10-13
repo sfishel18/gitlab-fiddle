@@ -49,6 +49,7 @@ const gitlabRequest = (uri, options = {}) => fetch(
 const gitSetup = async () => {
     const alreadyExists = await fileExists(targetRepoDir);
     if (alreadyExists) {
+        await exec(`git checkout main`, { cwd: targetRepoDir });
         return;
     }
     await exec('git clone git@gitlab.com:sfishel/pipeline-simulator-target.git', { cwd: __dirname });
