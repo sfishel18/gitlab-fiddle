@@ -38,4 +38,6 @@ app.put('/pipeline/:ref', async (req, res, next) => {
     }
 });
 
+app.get('/health', (_, res) => res.send({ ok: true }));
+
 app.listen(3000);
