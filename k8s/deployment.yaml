@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-fiddle-backend-deployment
+  namespace: pipeline-simulator
+  labels:
+    app: gitlab-fiddle-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab-fiddle-backend
+  template:
+    metadata:
+      labels:
+        app: gitlab-fiddle-backend
+    spec:
+      containers:
+        - name: gitlab-fiddle-backend
+          image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:foo
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
