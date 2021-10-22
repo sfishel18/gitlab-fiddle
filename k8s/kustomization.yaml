@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: gitlab-fiddle
 resources:
   - namespace.yaml
+  - image-pull-secret.yaml
   - backend-deployment.yaml
   - backend-service.yaml
