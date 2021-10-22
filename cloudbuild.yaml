@@ -1,0 +1,8 @@
+steps:
+- id: 'docker build backend'
+  name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:foo', 'backend']
+  
+- id: 'docker push backend'
+  name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:foo']
