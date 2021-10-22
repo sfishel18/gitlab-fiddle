@@ -1,5 +1,5 @@
 {
-  "name": "pipeline-simulator-backend",
+  "name": "gitlab-fiddle-backend",
   "version": "0.1.0",
   "scripts": {
     "start": "node src/server.js",
@@ -7,14 +7,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/sfishel/pipeline-simulator.git"
+    "url": "git+ssh://git@github.com/sfishel18/gitlab-fiddle.git"
   },
   "author": "Simon Fishel",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/sfishel/pipeline-simulator/issues"
+    "url": "https://github.com/sfishel18/gitlab-fiddle/issues"
   },
-  "homepage": "https://gitlab.com/sfishel/pipeline-simulator#readme",
+  "homepage": "https://github.com/sfishel18/gitlab-fiddle#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
