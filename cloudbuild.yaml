@@ -3,7 +3,6 @@ steps:
   name: 'gcr.io/cloud-builders/nodejs/yarn'
   entrypoint: 'bash'
   args: ['-c', './scripts/get-bumped-git-tag.sh > /workspace/next-tag.txt']
-  env: ['EMAIL=cloud-build@gitlab-fiddle.com']
 
 - id: 'docker build backend'
   name: 'gcr.io/cloud-builders/docker'
@@ -19,3 +18,4 @@ steps:
   name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args: ['-c', 'git tag -a $(cat /workspace/next-tag.txt) && git push --tags']
+  env: ['EMAIL=cloud-build@gitlab-fiddle.com']
