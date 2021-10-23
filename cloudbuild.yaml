@@ -3,7 +3,7 @@ steps:
 - id: 'bump tag'
   name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
-  args: ['-c', 'wget -O - https://raw.githubusercontent.com/treeder/bump/master/gitbump.sh | bash']
+  args: ['-c', 'curl https://raw.githubusercontent.com/treeder/bump/v1.2.20/gitbump.sh | bash']
 
 - id: 'docker build backend'
   name: 'gcr.io/cloud-builders/docker'
