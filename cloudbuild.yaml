@@ -1,15 +1,21 @@
 steps:
-
-- id: 'bump tag'
-  name: 'gcr.io/cloud-builders/docker'
+- id: 'define next tag'
+  name: 'gcr.io/cloud-builders/nodejs/yarn'
   entrypoint: 'bash'
-  args: ['-c', 'git config --global init.defaultBranch main && curl https://raw.githubusercontent.com/treeder/bump/v1.2.20/gitbump.sh | bash']
+  args: ['-c', './scripts/get-bumped-git-tag.sh > /workspace/next-tag.txt']
   env: ['EMAIL=cloud-build@gitlab-fiddle.com']
 
 - id: 'docker build backend'
   name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$TAG_NAME', 'backend']
+  entrypoint: 'bash'
+  args: ['-c', 'docker build -t us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$(cat /workspace/next-tag.txt) backend']
   
 - id: 'docker push backend'
   name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$TAG_NAME']
+  entrypoint: 'bash'
+  args: ['-c', 'docker push us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$(cat /workspace/next-tag.txt)']
+
+- id: 'apply next tag'
+  name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args: ['-c', 'git tag -a $(cat /workspace/next-tag.txt) && git push --tags']
