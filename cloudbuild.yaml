@@ -38,6 +38,7 @@ steps:
     cd gitlab-fiddle
     git tag -a "$(cat /workspace/next-tag.txt)" -m "$(cat /workspace/next-tag.txt)"
     git push --tags
+  env: ['EMAIL=cloud-build@gitlab-fiddle.com']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
