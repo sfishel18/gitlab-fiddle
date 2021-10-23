@@ -5,5 +5,6 @@ resources:
   - namespace.yaml
   - image-pull-secret.yaml
   - backend-image-sync.yaml
+  - image-update-automation.yaml
   - backend-deployment.yaml
   - backend-service.yaml
