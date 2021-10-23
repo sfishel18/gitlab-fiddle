@@ -4,5 +4,6 @@ namespace: gitlab-fiddle
 resources:
   - namespace.yaml
   - image-pull-secret.yaml
+  - backend-image-sync.yaml
   - backend-deployment.yaml
   - backend-service.yaml

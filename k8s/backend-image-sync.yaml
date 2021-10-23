@@ -1,0 +1,10 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: backend
+  namespace: gitlab-fiddle
+spec:
+  image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend
+  interval: 10m0s
+  secretRef:
+    name: gcloud-artifact-registry
