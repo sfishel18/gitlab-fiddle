@@ -17,5 +17,5 @@ steps:
 - id: 'apply next tag'
   name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
-  args: ['-c', 'git tag -a $(cat /workspace/next-tag.txt) && git push --tags']
+  args: ['-c', 'git tag -a $(cat /workspace/next-tag.txt) -m "$(cat /workspace/next-tag.txt)" && git push --tags']
   env: ['EMAIL=cloud-build@gitlab-fiddle.com']
