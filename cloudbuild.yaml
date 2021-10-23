@@ -3,8 +3,8 @@ steps:
 - id: 'bump tag'
   name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
-  args: ['-c', 'curl https://raw.githubusercontent.com/treeder/bump/v1.2.20/gitbump.sh | bash']
-  env: ['EMAIL=cloud-build@gitlab-fiddle.com', ]
+  args: ['-c', 'git config --global init.defaultBranch main && curl https://raw.githubusercontent.com/treeder/bump/v1.2.20/gitbump.sh | bash']
+  env: ['EMAIL=cloud-build@gitlab-fiddle.com']
 
 - id: 'docker build backend'
   name: 'gcr.io/cloud-builders/docker'
