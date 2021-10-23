@@ -31,7 +31,13 @@ steps:
 - id: 'apply next tag'
   name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
-  args: ['-c', 'cat /root/.ssh/id_rsa && git tag -a "$(cat /workspace/next-tag.txt)" -m "$(cat /workspace/next-tag.txt)" && git push --tags']
+  args:
+  - -c
+  - |
+    git clone git@github.com:sfishel18/gitlab-fiddle.git
+    cd gitlab-fiddle
+    git tag -a "$(cat /workspace/next-tag.txt)" -m "$(cat /workspace/next-tag.txt)"
+    git push --tags
   env: ['EMAIL=cloud-build@gitlab-fiddle.com']
   volumes:
   - name: 'ssh'
