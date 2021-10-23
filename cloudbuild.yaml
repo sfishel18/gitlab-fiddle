@@ -1,12 +1,12 @@
 steps:
 - id: 'set up github ssh'
   name: 'gcr.io/cloud-builders/git'
-  secretEnv: ['SSH_KEY']
+  secretEnv: ['CLOUDBUILD_SSH_KEY']
   entrypoint: 'bash'
   args:
   - -c
   - |
-    echo "$$SSH_KEY" >> /root/.ssh/id_rsa
+    echo "$$CLOUDBUILD_SSH_KEY" >> /root/.ssh/id_rsa
     chmod 400 /root/.ssh/id_rsa
     cp cloudbuild/known_hosts.github /root/.ssh/known_hosts
   volumes:
@@ -45,5 +45,5 @@ steps:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/1023756473676/secrets/SSH_KEY/versions/latest
-    env: 'SSH_KEY'
+  - versionName: projects/1023756473676/secrets/CLOUDBUILD_SSH_KEY/versions/latest
+    env: 'CLOUDBUILD_SSH_KEY'
