@@ -4,3 +4,4 @@ creds
 node_modules
 pipeline-simulator-target
 dist
+private

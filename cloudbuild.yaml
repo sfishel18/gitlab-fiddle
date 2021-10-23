@@ -1,4 +1,18 @@
 steps:
+- id: 'set up github ssh'
+  name: 'gcr.io/cloud-builders/git'
+  secretEnv: ['SSH_KEY']
+  entrypoint: 'bash'
+  args:
+  - -c
+  - |
+    echo "$$SSH_KEY" >> /root/.ssh/id_rsa
+    chmod 400 /root/.ssh/id_rsa
+    cp cloudbbuild/known_hosts.github /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
 - id: 'define next tag'
   name: 'gcr.io/cloud-builders/nodejs/yarn'
   entrypoint: 'bash'
@@ -17,5 +31,13 @@ steps:
 - id: 'apply next tag'
   name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
-  args: ['-c', 'git tag -a $(cat /workspace/next-tag.txt) -m "$(cat /workspace/next-tag.txt)" && git push --tags']
+  args: ['-c', 'git tag -a "$(cat /workspace/next-tag.txt)" -m "$(cat /workspace/next-tag.txt)" && git push --tags']
   env: ['EMAIL=cloud-build@gitlab-fiddle.com']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/1023756473676/secrets/SSH_KEY/versions/latest
+    env: 'SSH_KEY'
