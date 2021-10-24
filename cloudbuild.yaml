@@ -20,8 +20,16 @@ steps:
 
 - id: 'docker build backend'
   name: 'gcr.io/cloud-builders/docker'
+  secretEnv: ['CLOUDBUILD_SSH_KEY']
   entrypoint: 'bash'
-  args: ['-c', 'docker build -t us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$(cat /workspace/next-tag.txt) backend']
+  args: 
+    - -c'
+    - | 
+      docker build \
+        -t us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$(cat /workspace/next-tag.txt) \
+        --build-arg SSH_KEY=$$CLOUDBUILD_SSH_KEY" \
+        --build-arg SSH_KNOWN_HOSTS=$(cat cloudbuild/known_hosts.gitlab)" \
+        backend
   
 - id: 'docker push backend'
   name: 'gcr.io/cloud-builders/docker'
