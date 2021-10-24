@@ -23,7 +23,7 @@ steps:
   secretEnv: ['CLOUDBUILD_SSH_KEY']
   entrypoint: 'bash'
   args: 
-    - -c'
+    - -c
     - | 
       docker build \
         -t us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$(cat /workspace/next-tag.txt) \
