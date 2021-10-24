@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gitlab-fiddle-backend-deployment
-  namespace: gitlab-fiddle
   labels:
     app: gitlab-fiddle-backend
 spec:
