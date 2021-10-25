@@ -36,6 +36,21 @@ steps:
   entrypoint: 'bash'
   args: ['-c', 'docker push us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:$(cat /workspace/next-tag.txt)']
 
+- id: 'docker build frontend'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args: 
+    - -c
+    - | 
+      docker build \
+        -t us-west1-docker.pkg.dev/gitlab-fiddle/docker/frontend:$(cat /workspace/next-tag.txt) \
+        frontend
+  
+- id: 'docker push frontend'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args: ['-c', 'docker push us-west1-docker.pkg.dev/gitlab-fiddle/docker/frontend:$(cat /workspace/next-tag.txt)']
+
 - id: 'apply next tag'
   name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'

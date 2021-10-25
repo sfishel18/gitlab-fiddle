@@ -45,6 +45,27 @@ spec:
       range: 0.x
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: frontend
+spec:
+  image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/frontend
+  interval: 10m0s
+  secretRef:
+    name: gcloud-artifact-registry
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: frontend
+spec:
+  imageRepositoryRef:
+    name: frontend
+  policy:
+    semver:
+      range: 0.x
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
 kind: ImageUpdateAutomation
 metadata:
   name: gitlab-fiddle

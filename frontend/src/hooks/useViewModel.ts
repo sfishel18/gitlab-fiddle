@@ -8,7 +8,7 @@ import { PipelineInfo } from '../type';
 import getJobsByStage from '../utils/getJobsByStage';
 import pipelineHasIncompleteJobs from '../utils/pipelineHasIncompleteJobs';
 
-const apiUrl = 'http://localhost:3000';
+const apiUrl = process.env.API_URL;
 
 type PipelineContext = {
     yaml: string | null,
