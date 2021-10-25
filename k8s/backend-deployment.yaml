@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: gitlab-fiddle-backend
-          image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:v0.0.16 # {"$imagepolicy": "gitlab-fiddle:backend"}
+          image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:v0.0.17 # {"$imagepolicy": "gitlab-fiddle:backend"}
           ports:
             - containerPort: 3000
           env:

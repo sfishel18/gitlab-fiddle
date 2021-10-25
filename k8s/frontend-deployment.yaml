@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gitlab-fiddle-frontend
-          image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/frontend:v0.0.16 # {"$imagepolicy": "gitlab-fiddle:frontend"}
+          image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/frontend:v0.0.17 # {"$imagepolicy": "gitlab-fiddle:frontend"}
           ports:
             - containerPort: 3000
           resources:
