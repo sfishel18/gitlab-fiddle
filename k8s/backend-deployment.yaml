@@ -1,3 +1,16 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: backend-deployment-secrets
+  namespace: gitlab-fiddle
+spec:
+  encryptedData:
+    GITLAB_API_TOKEN: AgCcYWluDQwjtxYFM5Iqxk9klxspCn6Ra2/z27J3RucG5qG3JcT/TAXiwVFQQ5YeTpV2nOdUQmSd4U3o68xf0ZFSRmdq/ZW9TslS3Az1Qfzs1bfi26kqLccXCn0FcolxTj1qzZ1OcNE1yEHwqogREicsfRK7vBaZbNFWeUrNG2hT96weP0x08JbchxK1zNTcllBFNOLjdH/Z1Mzscp77C9owTSXazKnd+KmmiIW/jvQXaGilyocl6JIQYZNAFfUvNvH25K8bwCw+D+qGkApvPENSylGXS6wvF7d+l+CsUHSpF9ObZT0gArmjQcMQ/5DoR0BXf/dcI2cxDsUjorUr5EpoNgrL09J27ZADWeebfMhWcHHUcRcCmLkxBE1d0lmo70TmQgbak1Y83Jke3pAva6n7XXADZAPkuCdZ12/g8Bk9A+juxa2A/DLRtUcvZWiY79+ithXHNmH6djd5wX4GtrFGT5JSIEU5zGRsmtHiWg6sMQl+cTDXgENQL4B5P949tLdK6Bl0dPN924+LiEUBza86UhpZ4evNy+uywYGmLidRi+Dje/Cj2d0Tzwiw9EdWxT/YziLVeeaAWfmI/YxGeMfqAkd4+rJrRzdCWzsWloW2sNyTpi0tNl/a6sFRxND65QAZwSoG4QAFbF0S8MbntSubfStn+Sck4+Pq7A1siz5rFTZpAqrBrvIE9I1I/LEiK47wSkOe+ok9GfLbzVjh+F1Op+VFQg==
+  template:
+    metadata:
+      name: backend-deployment-secrets
+      namespace: gitlab-fiddle
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,6 +32,12 @@ spec:
           image: us-west1-docker.pkg.dev/gitlab-fiddle/docker/backend:v0.0.14 # {"$imagepolicy": "gitlab-fiddle:backend"}
           ports:
             - containerPort: 3000
+          env: 
+            - name: GITLAB_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: backend-deployment-secrets
+                  key: GITLAB_API_TOKEN
           resources:
             requests:
               memory: "64Mi"

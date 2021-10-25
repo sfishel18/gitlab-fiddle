@@ -9,7 +9,6 @@ const yaml = require('yaml');
 const { omit } = require('lodash');
 
 dotenv.config();
-process.env.GIT_SSH_COMMAND = `ssh -i ${path.resolve(__dirname, '..', '.ssh', 'id_ed25519')} -o IdentitiesOnly=yes`;
 
 const projectId = '30142829';
 const targetRepoDir = path.join(__dirname, 'pipeline-simulator-target');
