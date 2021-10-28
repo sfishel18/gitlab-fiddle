@@ -10,29 +10,18 @@ app.use(cors());
 app.post('/pipeline', async (req, res, next) => {
     try {
         const { yaml, overrides } = req.body
-        const ref = await api.createPipeline(yaml, overrides);
-        res.status(201).json({ id: ref });
+        const id = await api.createPipeline(yaml, overrides);
+        res.status(201).json({ id });
     } catch (error) {
         return next(error)
     }
 });
 
-app.get('/pipeline/:ref', async (req, res, next) => {
+app.get('/pipeline/:id', async (req, res, next) => {
     try {
-        const { ref } = req.params;
-        const info = await api.getPipeline(ref);
+        const { id } = req.params;
+        const info = await api.getPipeline(id);
         res.json(info);
-    } catch (error) {
-        return next(error)
-    }
-});
-
-app.put('/pipeline/:ref', async (req, res, next) => {
-    try {
-        const { ref } = req.params;
-        const { yaml, overrides } = req.body
-        await api.updatePipeline(ref, yaml, overrides);
-        res.status(201).json({ id: ref });
     } catch (error) {
         return next(error)
     }

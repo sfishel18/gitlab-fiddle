@@ -1,9 +1,4 @@
 const dotenv = require('dotenv');
-const path = require('path');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const writeFile = util.promisify(require('fs').writeFile);
-const fileExists = util.promisify(require('fs').exists);
 const fetch = require('node-fetch');
 const yaml = require('yaml');
 const { omit } = require('lodash');
@@ -11,7 +6,6 @@ const { omit } = require('lodash');
 dotenv.config();
 
 const projectId = '30142829';
-const targetRepoDir = path.join(__dirname, 'pipeline-simulator-target');
 
 const jobIsComplete = job => job.status === 'success' || job.status === 'failed';
 
@@ -43,57 +37,33 @@ const gitlabRequest = (uri, options = {}) => fetch(
             ...options.headers,
             'PRIVATE-TOKEN': process.env.GITLAB_API_TOKEN
         },
-    }).then(res => res.json());
+    }).then(res => { 
 
-const gitSetup = async () => {
-    const alreadyExists = await fileExists(targetRepoDir);
-    if (alreadyExists) {
-        await exec(`git checkout main`, { cwd: targetRepoDir });
-        return;
-    }
-    await exec('git clone git@gitlab.com:sfishel/pipeline-simulator-target.git', { cwd: __dirname });
-    await exec('git config user.email "api@simonfishel.com"', { cwd: targetRepoDir });
-    await exec('git config user.name "API User"', { cwd: targetRepoDir });
-};
-
-const waitForPipelineCreated = async (ref, pipelineId) => {
-    let pipelines = [];
-    while (!pipelines || !pipelines.some(pipeline => pipeline.id === pipelineId)) {
-        pipelines = await gitlabRequest(`pipelines?ref=${ref}`);
-        await new Promise(resolve => setTimeout(resolve, 500));
-    }
-};
+        return res.json();
+    });
 
 module.exports.createPipeline = async (yaml, overrides) => {
-    const branchName = `branch-${Date.now()}`;
-    await gitSetup();
-    await exec(`git checkout -b ${branchName}`, { cwd: targetRepoDir });
     const processedYaml = preprocessYaml(yaml);
-    await writeFile(`${targetRepoDir}/.gitlab-ci.yml`, processedYaml, { encoding: 'utf-8' });
-    await exec('git add .gitlab-ci.yml', { cwd: targetRepoDir });
-    await exec('git commit -m "create pipeline definition"', { cwd: targetRepoDir });
-    await exec(`git push -u origin ${branchName} -o ci.skip`, { cwd: targetRepoDir });
-    const { id: pipelineId } = await gitlabRequest(`trigger/pipeline?ref=${branchName}&token=${process.env.GITLAB_TRIGGER_TOKEN}`, { method: 'POST' });
-    await waitForPipelineCreated(branchName, pipelineId);
-    return branchName;
+    const formBody = new URLSearchParams();
+    formBody.append('ref', 'main');
+    formBody.append('token', process.env.GITLAB_TRIGGER_TOKEN);
+    formBody.append('variables[YAML]', processedYaml);
+    const { id: pipelineId } = await gitlabRequest('trigger/pipeline', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formBody
+     });
+    return pipelineId;
 };
 
-module.exports.updatePipeline = async (ref, yaml, overrides) => {
-    await gitSetup();
-    await exec(`git checkout ${ref}`, { cwd: targetRepoDir });
-    const processedYaml = preprocessYaml(yaml);
-    await writeFile(`${targetRepoDir}/.gitlab-ci.yml`, processedYaml, { encoding: 'utf-8' });
-    // TODO: what if nothing changed?
-    await exec('git add .gitlab-ci.yml', { cwd: targetRepoDir });
-    await exec('git commit -m "update pipeline definition"', { cwd: targetRepoDir });
-    await exec(`git push -u origin ${ref} -o ci.skip`, { cwd: targetRepoDir });
-    const { id: pipelineId } = await gitlabRequest(`trigger/pipeline?ref=${ref}&token=${process.env.GITLAB_TRIGGER_TOKEN}`, { method: 'POST' });
-    await waitForPipelineCreated(ref, pipelineId);
-};
-
-module.exports.getPipeline = async (ref) => {
-    const pipelines = await gitlabRequest(`pipelines?ref=${ref}`);
-    const jobs = await gitlabRequest(`pipelines/${pipelines[0].id}/jobs`);
+module.exports.getPipeline = async (pipelineId) => {
+    const bridges = await gitlabRequest(`pipelines/${pipelineId}/bridges`);
+    if (bridges.length === 0 || !bridges[0].downstream_pipeline) {
+        return { dummy: { status: 'created' } }
+    }
+    const jobs = await gitlabRequest(`pipelines/${bridges[0].downstream_pipeline.id}/jobs`);
     const jobsByName = {};
     const jobArtifactPromises = [];
     jobs.forEach(job => {
